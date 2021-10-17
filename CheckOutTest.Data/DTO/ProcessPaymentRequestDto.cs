@@ -10,13 +10,12 @@ namespace CheckOutTest.Data.DTO
         [ExpiryDateAnotation]
         public string ExpiryDate { get; set; }
         [Required]
-        [Range(0, int.MaxValue, ErrorMessage = "Amount must be a valid number")]
+        [Range(1, int.MaxValue, ErrorMessage = "Amount must be a valid positive number")]
         public int Amount { get; set; }
         [Required]
         [MaxLength(3, ErrorMessage = "Currency must be a currency code")]
         public string Currency { get; set; }
-        [Required]
-        [Range(0, 9999, ErrorMessage = "CVV must be a valid 3 digit number (4 for Amex)")]
+        [CVVAnotation]
         public int CVV { get; set; }
     }
 }

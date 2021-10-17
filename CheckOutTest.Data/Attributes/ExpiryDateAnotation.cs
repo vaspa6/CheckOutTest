@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace CheckOutTest.Data.Attributes
@@ -25,9 +26,8 @@ namespace CheckOutTest.Data.Attributes
             }
             else
             {
-                var month = Regex.Match(expiryDate[0], @"^[0-9]{2}$").Success;
-                var year = Regex.Match(expiryDate[0], @"^[0-9]{2}$").Success;
-                if (month && year)
+                DateTime.TryParseExact(value.ToString(), "MM/yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime expiryDate1);
+                if (expiryDate1 != null && expiryDate1 > DateTime.Now)
                 {
                     return ValidationResult.Success;
                 }

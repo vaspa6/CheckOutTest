@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -27,7 +30,7 @@ namespace CheckOutTest.Web.Test
         {
             var mockResult = new PaymentResponseDto()
             {
-                CardNumber = "1234567856321234",
+                CardNumber = "4407559483963993",
                 Amount = 120,
                 Currency = "GBP",
                 ExpiryDate = "12/23"
@@ -87,9 +90,11 @@ namespace CheckOutTest.Web.Test
         [Fact]
         public async Task ProcessPaymentTest_Returns200()
         {
-            var mockResult = new ProcessPaymentRequestDto()
+            var paymentId = Guid.NewGuid();
+
+            var mockRequest = new ProcessPaymentRequestDto()
             {
-                CardNumber = "1234567856321234",
+                CardNumber = "4407559483963993",
                 Amount = 120,
                 Currency = "GBP",
                 ExpiryDate = "12/23",
@@ -98,17 +103,22 @@ namespace CheckOutTest.Web.Test
 
             _mockPaymentManager
                 .Setup(x => x.ProcessPayment(It.IsAny<ProcessPaymentRequestDto>()))
-                .Returns(Task.FromResult(PaymentStatusEnum.Successful.ToString()));
+                .Returns(Task.FromResult(new ProcessPaymentResponseDto()
+                {
+                    Id = paymentId,
+                    Status = PaymentStatusEnum.Successful.ToString()
+                }));
 
             var controller = new PaymentController(_mockLogger.Object, _mockPaymentManager.Object);
 
-            var result = await controller.ProcessPayment(mockResult);
+            var result = await controller.ProcessPayment(mockRequest);
 
             var viewResult = Assert.IsType<OkObjectResult>(result);
 
-            var model = Assert.IsAssignableFrom<string>(viewResult.Value);
+            var model = Assert.IsAssignableFrom<ProcessPaymentResponseDto>(viewResult.Value);
 
-            Assert.Equal(PaymentStatusEnum.Successful.ToString(), model);
+            Assert.Equal(paymentId, model.Id);
+            Assert.Equal(PaymentStatusEnum.Successful.ToString(), model.Status);
         }
 
         [Fact]

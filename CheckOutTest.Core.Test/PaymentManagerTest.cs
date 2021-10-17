@@ -83,11 +83,12 @@ namespace CheckOutTest.Core.Test
         [Fact]
         public async Task ProcessPaymentTest_Success_BankSuccessful()
         {
+            var paymentId = Guid.NewGuid();
             _mockBank
                 .Setup(x => x.ProcessPayment(It.IsAny<PaymentBdo>()))
                 .Returns(Task.FromResult(new ProcessPaymentBankResponseDto()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = paymentId,
                     Status = PaymentStatusEnum.Successful
                 }));
 
@@ -100,17 +101,20 @@ namespace CheckOutTest.Core.Test
                 CVV = 895
             });
 
-            Assert.Equal(PaymentStatusEnum.Successful.ToString(), result);
+            Assert.Equal(paymentId, result.Id);
+            Assert.Equal(PaymentStatusEnum.Successful.ToString(), result.Status);
         }
 
         [Fact]
         public async Task ProcessPaymentTest_Success_BankFailed()
         {
+            var paymentId = Guid.NewGuid();
+
             _mockBank
                 .Setup(x => x.ProcessPayment(It.IsAny<PaymentBdo>()))
                 .Returns(Task.FromResult(new ProcessPaymentBankResponseDto()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = paymentId,
                     Status = PaymentStatusEnum.Failed
                 }));
 
@@ -123,17 +127,20 @@ namespace CheckOutTest.Core.Test
                 CVV = 895
             });
 
-            Assert.Equal(PaymentStatusEnum.Failed.ToString(), result);
+            Assert.Equal(paymentId, result.Id);
+            Assert.Equal(PaymentStatusEnum.Failed.ToString(), result.Status);
         }
 
         [Fact]
         public async Task ProcessPaymentTest_Success_BankPending()
         {
+            var paymentId = Guid.NewGuid();
+
             _mockBank
                 .Setup(x => x.ProcessPayment(It.IsAny<PaymentBdo>()))
                 .Returns(Task.FromResult(new ProcessPaymentBankResponseDto()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = paymentId,
                     Status = PaymentStatusEnum.Pending
                 }));
 
@@ -146,7 +153,8 @@ namespace CheckOutTest.Core.Test
                 CVV = 895
             });
 
-            Assert.Equal(PaymentStatusEnum.Pending.ToString(), result);
+            Assert.Equal(paymentId, result.Id);
+            Assert.Equal(PaymentStatusEnum.Pending.ToString(), result.Status);
         }
 
         [Fact]

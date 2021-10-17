@@ -1,34 +1,35 @@
 ﻿using System.Data;
-using Dapper.Logging;
 using System.Threading.Tasks;
 using System;
+using CheckOutTest.Data.Configuration;
 
 namespace CheckOutTest.Data.Repositories.Payment
 {
     public class PaymentRepo : IPaymentRepo
     {
-        private protected IDbConnection _dbConnection;
-        public PaymentRepo(IDbConnectionFactory dbConnection)
+        private readonly DatabaseContext _dbContext;
+
+        public PaymentRepo(DatabaseContext dbContext)
         {
-            _dbConnection = dbConnection.CreateConnection();
+            _dbContext = dbContext;
         }
 
-        public Task<bool> AddPayment(Entities.Payment payment)
+        public async Task<Guid> AddPayment(Entities.Payment payment)
         {
-            using (IDbConnection conn = _dbConnection)
+            var result = await _dbContext.Payments.AddAsync(payment);
+            if (result.State != Microsoft.EntityFrameworkCore.EntityState.Added)
             {
-                //SQL logic
+                throw new DataMisalignedException($"Insert of payment with id {payment.ID} has failed");
             }
-            return Task.FromResult(true);
+            await _dbContext.SaveChangesAsync();
+            return (payment.ID);
         }
 
-        public Task<Entities.Payment> GetPaymentById(Guid id)
+        public async Task<Entities.Payment> GetPaymentById(Guid id)
         {
-            using (IDbConnection conn = _dbConnection)
-            {
-                //SQL logic
-            }
-            return Task.FromResult(new Entities.Payment { CardNumber = "4444333311112456", ExpiryDate = "02/28", ID = Guid.NewGuid(), Amount = 10, Created = DateTime.UtcNow, Currency = "GBP" });
+            var result = await _dbContext.Payments.FindAsync(id);
+
+            return result;
         }
     }
 }

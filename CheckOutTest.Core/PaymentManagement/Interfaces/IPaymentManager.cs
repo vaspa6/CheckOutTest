@@ -6,7 +6,7 @@ namespace CheckOutTest.Core.PaymentManagement.Interfaces
 {
     public interface IPaymentManager
     {
-        Task<string> ProcessPayment(ProcessPaymentRequestDto paymentDto);
+        Task<ProcessPaymentResponseDto> ProcessPayment(ProcessPaymentRequestDto paymentDto);
         Task<PaymentResponseDto> GetPayment(Guid paymentId);
     }
 }

@@ -1,5 +1,4 @@
 using CheckOutTest.Web.Configuration;
-using Dapper.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,12 +7,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
 using CheckOutTest.Web.Configuration.Middleware;
-using Microsoft.Data.Sqlite;
 using CheckOutTest.Core.BankManagement.Interfaces;
 using CheckOutTest.Core.MockBank;
 using CheckOutTest.Core.PaymentManagement.Interfaces;
 using CheckOutTest.Core.PaymentManagement;
 using CheckOutTest.Data.Repositories.Payment;
+using CheckOutTest.Data.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace CheckOutTest.Web
 {
@@ -56,10 +56,8 @@ namespace CheckOutTest.Web
             });
 
             services.AddControllers();
-            //services.AddDbConnectionFactory(
-            //    _ => new SqlConnection(Configuration.GetConnectionString("SQLDB")));
-            services.AddDbConnectionFactory(
-                _ => new SqliteConnection());
+            services.AddEntityFrameworkSqlite().AddDbContext<DatabaseContext>(options =>
+                options.UseSqlite(Configuration.GetConnectionString("SQLDB")));
             services.AddScoped<IBank, MockBank>();
             services.AddScoped<IPaymentManager, PaymentManager>();
             services.AddScoped<IPaymentRepo, PaymentRepo>();
@@ -100,6 +98,12 @@ namespace CheckOutTest.Web
             {
                 endpoints.MapControllers();
             });
+
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetRequiredService<DatabaseContext>();
+                context.Database.EnsureCreated();
+            }
         }
     }
 }

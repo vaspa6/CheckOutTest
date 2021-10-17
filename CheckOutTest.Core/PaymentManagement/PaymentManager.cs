@@ -28,7 +28,7 @@ namespace CheckOutTest.Core.PaymentManagement
             _paymentRepo = paymentRepo;
         }
 
-        public async Task<string> ProcessPayment(ProcessPaymentRequestDto paymentDto)
+        public async Task<ProcessPaymentResponseDto> ProcessPayment(ProcessPaymentRequestDto paymentDto)
         {
             if (paymentDto == null)
             {
@@ -46,11 +46,18 @@ namespace CheckOutTest.Core.PaymentManagement
                 var payment = _mapper.Map<Payment>(paymentBdo);
                 payment.ID = paymentResponse.Id;
                 payment.Created = DateTime.UtcNow;
-                await _paymentRepo.AddPayment(payment);
+                try
+                {
+                    var dbResult = await _paymentRepo.AddPayment(payment);
+                }
+                catch (DataMisalignedException dmex)
+                {
+                    _logger.LogError($"Saving payment with {paymentResponse.Id} has failed", dmex);
+                }
             }
             _logger.LogInformation($"Payment with {paymentResponse.Id} Id was processed with the following status: {paymentResponse.Status} ");
 
-            return paymentResponse.Status.ToString();
+            return new ProcessPaymentResponseDto() { Id = paymentResponse.Id, Status = paymentResponse.Status.ToString()};
         }
 
         public async Task<PaymentResponseDto> GetPayment(Guid paymentId)
