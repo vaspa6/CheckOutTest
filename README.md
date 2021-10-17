@@ -4,15 +4,15 @@ Technical Test for CheckOut
 ## Installation
 
 ## Assumptions
-Merchant will be calling the gateway in a RESTful manner,
-We don't want to store CVV information in our data store for compliance reasons,
-Use of greater separation between data objects for future-proofing from the assumption made that this is MVP for this project
+- Merchant will be calling the gateway in a RESTful manner,
+- We don't want to store CVV information in our data store for compliance reasons,
+- Use of greater separation between data objects for future-proofing from the assumption made that this is MVP for this project
 
 ## Improvements
-Automated API tests ran on a build pipeline/release process (PostMan for example)
-Implementation of Fluent Validator (or similar library) instead of the custom data annotations for validation
-Improve Authorisation (via Cloud services or Identity server)
-Implementing an Adapter pattern to keep interactions with a Bank generic and build adapter specifically for every single 3rd part bank
+- Automated API tests ran on a build pipeline/release process (PostMan for example)
+- Implementation of Fluent Validator (or similar library) instead of the custom data annotations for validation
+- Improve Authorisation (via Cloud services or Identity server)
+- Implementing an Adapter pattern to keep interactions with a Bank generic and build adapter specifically for every single 3rd part bank
 
 ## Cloud
 For a Cloud deployment/setup, I would use an API Management service (both Azure and AWS provide very similar services) which will be the point of contact for the API endpoints.
@@ -22,6 +22,6 @@ different data stores. The backend can be deployed either to app services or con
 services for those)
 
 ## Comments
-In this project, I have implemented Dapper as a framework of choice to interact with the DB, but Entity framework or any other framework could be used instead.
+In this project, I have implemented Entity framework as a framework of choice to interact with the DB, but Dapper or any other framework could be used instead.
 Very little of the compliance that Visa Program, MasterCard Program and Amex rules have been followed here. In a real-life scenario from my experience, there will be
 a lot of data that will have to be masked, encrypted under specific instruction or not stored at all.
