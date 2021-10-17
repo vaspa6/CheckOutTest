@@ -1,7 +1,19 @@
 # CheckOutTest
 Technical Test for CheckOut
 
-## Installation
+## Run Web APP
+- Open cmd/powershell in ./CheckOutTest\CheckOutTest.Web
+- Run command dotnet run
+- Head to https://localhost:5001/index.html for a UI of the endpoints available
+- There is an Authorize button on the top righ hand side of the webPage which need an API key to auth (key: 1f964f4c-ee29-4c75-bf05-56f750c6fa95)
+
+## Run Tests
+- WebAPI tests
+  - Open cmd/powershell in ./CheckOutTest\CheckOutTest.Web.Test
+  - Run command dotnet test
+- Manager tests
+  - Open cmd/powershell in ./CheckOutTest\CheckOutTest.Core.Test
+  - Run command dotnet test
 
 ## Assumptions
 - Merchant will be calling the gateway in a RESTful manner
@@ -18,6 +30,7 @@ Technical Test for CheckOut
 - Improve Authorisation (via Cloud services or Identity server)
 - Implementing an Adapter pattern to keep interactions with a Bank generic and build adapter specifically for every single 3rd part bank
 - Implementing encryption for recieved data (against sniffing attacks)
+- Docker image
 
 ## Cloud
 For a Cloud deployment/setup, I would use an API Management service (both Azure and AWS provide very similar services) which will be the point of contact for the API endpoints.
